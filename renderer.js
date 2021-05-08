@@ -1,4 +1,4 @@
-const { remote } = require('electron');
+const { remote, ipcRenderer } = require('electron');
 
 function searchChar(){
     event.preventDefault();
@@ -7,15 +7,8 @@ function searchChar(){
     server = document.getElementById('server').value
     region = document.getElementById('region').value
 
-    site = 'https://raider.io/characters/' + region + '/' + server + '/' + character;
+    url = 'https://raider.io/characters/' + region + '/' + server + '/' + character;
 
-    // (async () => {
-    //     const browser = await puppeteer.launch();
-    //     const page = await browser.newPage();
-
-    //     await page.goto(site);
-      
-    //     await browser.close();
-    //   })();
+    ipcRenderer.send('searchChar', url)
 
 }
