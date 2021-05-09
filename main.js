@@ -35,71 +35,72 @@ function createWindow () {
 
   ipcMain.on("searchChar", (event, url) => {
 
-    // durl = utf8.encode(url)
-
-    // console.log(durl);
-
     (async () => {
-      const browser = await puppeteer.launch({headless: false});
+      const browser = await puppeteer.launch({headless: true});
       const page = await browser.newPage();
       await page.goto(url);
 
-      // a web privacy square shows up and depending on the latency and code execution time it effectively blocks the website so we remove that
+      // a web privacy square shows up and depending on the latency and code execution time it effectively blocks the website so we remove that if it shows up
       privacy_square_selector = '#qc-cmp2-container'
 
-      await page.evaluate(() => {
-        let privacy_square = document.querySelector('#qc-cmp2-container');
-      
-        privacy_square.parentNode.removeChild(privacy_square);
-      });
+      try{
+        await page.evaluate(() => {
+          let privacy_square = document.querySelector('.qc-cmp2-container');
+        
+          privacy_square.parentNode.removeChild(privacy_square);
+        });
+      } catch (err){
 
-      console.log('Getting rows to click')
-
-      tableRows = await page.$$('table.slds-max-small-table > tbody:nth-child(2) > tr:nth-child(1)')
+      }
 
       console.log('Clicking rows')
 
-      for(let tableRow of tableRows){
-        tableRow.click()
-      }
-
+      await page.evaluate(() => {
+        let elements = document.getElementsByClassName('rio-striped');
+        for (let element of elements)
+            element.childNodes[0].click();
+      });
 
       console.log('Waiting for selectors')
 
-      css_select = 'table.slds-max-small-table > tbody:nth-child(2) > tr:nth-child(2) > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)'
+      css_select = 'table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)'
       
       await page.waitForSelector(css_select)
-      
-      // css_select = 'table > tbody > tr > td:nth-child(3) > div > div:nth-child(1) > span > span > span' this is the outer table
 
       console.log('Selecting data')
       
       dungs = await page.$$(css_select);
 
-      // console.log(dungs)
+      var timed = 0;
+      var depleted = 0;
 
       for(let dung of dungs) {
 
         dung = await dung.getProperty('innerText')
         dung = await dung.jsonValue()
 
-        console.log(dung)
+        if(dung == 'Keystone Depleted'){
+          depleted++
+        } else {
+          timed++
+        }
+
       }
 
-      // for (const element of inputElements) {
-      //         let inputValue;
-
-      //         inputValue = await page.evaluate(el => el.textContent, inputValue)
-
-      //         console.log(inputValue)
-      // }
-
-    
       await browser.close();
+
+      console.log('Browser closed')
+
+      var dungeons = {
+        total: timed + depleted,
+        timed: timed,
+        depleted: depleted,
+        timedPercent: Number(timed*100/(timed+depleted)).toFixed(2)
+      }
+
+      event.sender.send("sendCharData", dungeons);
+
     })();
-
-
-    //event.sender.send("sendCharData", charData);
 
   })
 

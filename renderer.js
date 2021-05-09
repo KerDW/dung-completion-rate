@@ -12,3 +12,14 @@ function searchChar(){
     ipcRenderer.send('searchChar', url)
 
 }
+
+ipcRenderer.on("sendCharData", (event, dungeons) => {
+
+    document.getElementById('completedDungs').innerHTML = "Dungeons completed: " + dungeons.total;
+    document.getElementById('timedDungs').innerHTML = "Dungeons timed: " + dungeons.timed;
+    document.getElementById('depletedDungs').innerHTML = "Dungeons depleted: " + dungeons.depleted;
+    document.getElementById('timedPercent').innerHTML = "Timed percent: " + dungeons.timedPercent + "%";
+
+    console.log(dungeons)
+
+})
