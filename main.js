@@ -43,15 +43,30 @@ function createWindow () {
       const browser = await puppeteer.launch();
       const page = await browser.newPage();
       await page.goto(url);
-      await page.click('tbody.rio-striped:nth-child(2) > tr:nth-child(1)')
-      await page.waitForSelector('table > table:nth-child(3) > tbody:nth-child(2)')
-      
-      css_select = 'table > table:nth-child(3) > tbody:nth-child(2) > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)'
-      // css_select = 'table > tbody > tr > td:nth-child(3) > div > div:nth-child(1) > span > span > span'
 
+      console.log('Getting rows to click')
+
+      tableRows = await page.$$('table.slds-max-small-table > tbody:nth-child(2) > tr:nth-child(1)')
+
+      console.log('Clicking rows')
+
+      for(let tableRow of tableRows){
+        tableRow.click()
+      }
+
+      console.log('Waiting for selectors')
+
+      css_select = 'table.slds-max-small-table > tbody:nth-child(2) > tr:nth-child(2) > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)'
+      
+      await page.waitForSelector(css_select)
+      
+      // css_select = 'table > tbody > tr > td:nth-child(3) > div > div:nth-child(1) > span > span > span' this is the outer table
+
+      console.log('Selecting data')
+      
       dungs = await page.$$(css_select);
 
-      console.log(dungs)
+      // console.log(dungs)
 
       for(let dung of dungs) {
 
