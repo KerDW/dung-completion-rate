@@ -40,9 +40,18 @@ function createWindow () {
     // console.log(durl);
 
     (async () => {
-      const browser = await puppeteer.launch();
+      const browser = await puppeteer.launch({headless: false});
       const page = await browser.newPage();
       await page.goto(url);
+
+      // a web privacy square shows up and depending on the latency and code execution time it effectively blocks the website so we remove that
+      privacy_square_selector = '#qc-cmp2-container'
+
+      await page.evaluate(() => {
+        let privacy_square = document.querySelector('#qc-cmp2-container');
+      
+        privacy_square.parentNode.removeChild(privacy_square);
+      });
 
       console.log('Getting rows to click')
 
@@ -53,6 +62,7 @@ function createWindow () {
       for(let tableRow of tableRows){
         tableRow.click()
       }
+
 
       console.log('Waiting for selectors')
 
