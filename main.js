@@ -35,10 +35,14 @@ function createWindow () {
 
   ipcMain.on("searchChar", (event, url) => {
 
+    var dungeons = new Object();
+
     (async () => {
       const browser = await puppeteer.launch({headless: true});
       const page = await browser.newPage();
       await page.goto(url);
+
+      console.log(url)
 
       // a web privacy square shows up and depending on the latency and code execution time it effectively blocks the website so we remove that if it shows up
       privacy_square_selector = '#qc-cmp2-container'
@@ -52,6 +56,12 @@ function createWindow () {
       } catch (err){
 
       }
+
+      const char_name = await page.evaluate(() => 
+        document.querySelector('.rio-text-shadow--heavy').innerText
+      );
+
+      console.log(char_name)
 
       console.log('Clicking rows')
 
@@ -71,36 +81,40 @@ function createWindow () {
       
       dungs = await page.$$(css_select);
 
+      console.log('Sorting data')
+
       var timed = 0;
       var depleted = 0;
 
-      for(let dung of dungs) {
+      for(dung of dungs) {
 
-        dung = await dung.getProperty('innerText')
+        dung = await dung.getProperty('textContent')
         dung = await dung.jsonValue()
+
+        // console.log(dung)
 
         if(dung == 'Keystone Depleted'){
           depleted++
         } else {
           timed++
         }
-
       }
 
       await browser.close();
 
       console.log('Browser closed')
 
-      var dungeons = {
+      dungeons = {
+        character: char_name,
         total: timed + depleted,
         timed: timed,
         depleted: depleted,
         timedPercent: Number(timed*100/(timed+depleted)).toFixed(2)
       }
 
+    })().then(() => {
       event.sender.send("sendCharData", dungeons);
-
-    })();
+    });
 
   })
 
