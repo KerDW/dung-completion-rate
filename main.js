@@ -35,14 +35,16 @@ function createWindow () {
 
   ipcMain.on("searchChar", (event, url) => {
 
-    var dungeons = new Object();
+    var dungeons_data = new Object();
 
     (async () => {
       const browser = await puppeteer.launch({headless: true});
       const page = await browser.newPage();
-      await page.goto(url);
 
-      console.log(url)
+      // this allows printing to the console inside evaluate
+      page.on('console', (log) => console[log._type](log._text));
+
+      await page.goto(url);
 
       // a web privacy square shows up and depending on the latency and code execution time it effectively blocks the website so we remove that if it shows up
       privacy_square_selector = '#qc-cmp2-container'
@@ -57,14 +59,18 @@ function createWindow () {
 
       }
 
-      const char_name = await page.evaluate(() => 
+      // get char name and covenant
+      var char_name = await page.evaluate(() => 
         document.querySelector('.rio-text-shadow--heavy').innerText
       );
 
-      console.log(char_name)
+      var covenant = await page.evaluate(() => 
+        document.querySelector('.nowrap').innerText
+      );
 
       console.log('Clicking rows')
 
+      // click open drop downs so I can scrape the info inside
       await page.evaluate(() => {
         let elements = document.getElementsByClassName('rio-striped');
         for (let element of elements)
@@ -73,47 +79,53 @@ function createWindow () {
 
       console.log('Waiting for selectors')
 
-      css_select = 'table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)'
+      var css_select = 'table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)'
       
       await page.waitForSelector(css_select)
 
       console.log('Selecting data')
-      
-      dungs = await page.$$(css_select);
 
-      console.log('Sorting data')
+      // iterate all dungeons completed and sort info
+      dungeons_data = await page.evaluate(() => {
 
-      var timed = 0;
-      var depleted = 0;
+        var timed = 0;
+        var depleted = 0;
+        let dungs = document.querySelectorAll('table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)');
 
-      for(dung of dungs) {
+        for (let dung of dungs){
+          var dung_value = dung.textContent
 
-        dung = await dung.getProperty('textContent')
-        dung = await dung.jsonValue()
+          // console.log(dung_value)
 
-        // console.log(dung)
-
-        if(dung == 'Keystone Depleted'){
-          depleted++
-        } else {
-          timed++
+          if(dung_value == 'Keystone Depleted'){
+            depleted++
+          } else {
+            timed++
+          }
         }
-      }
+
+        console.log('Sorting data')
+
+        let dungeons = {
+          total: timed + depleted,
+          timed: timed,
+          depleted: depleted,
+          timedPercent: Number(timed*100/(timed+depleted)).toFixed(2)
+        }
+
+        return dungeons;
+
+      });
+
+      dungeons_data.character = char_name;
+      dungeons_data.covenant = covenant;
 
       await browser.close();
 
       console.log('Browser closed')
 
-      dungeons = {
-        character: char_name,
-        total: timed + depleted,
-        timed: timed,
-        depleted: depleted,
-        timedPercent: Number(timed*100/(timed+depleted)).toFixed(2)
-      }
-
     })().then(() => {
-      event.sender.send("sendCharData", dungeons);
+      event.sender.send("sendCharData", dungeons_data);
     });
 
   })

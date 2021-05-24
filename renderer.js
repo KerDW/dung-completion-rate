@@ -18,6 +18,7 @@ function searchChar(){
 ipcRenderer.on("sendCharData", (event, dungeons) => {
 
     document.getElementById('charName').innerHTML = "Character: " + dungeons.character;
+    document.getElementById('covenant').innerHTML = "Covenant: " + dungeons.covenant;
     document.getElementById('completedDungs').innerHTML = "Dungeons completed: " + dungeons.total;
     document.getElementById('timedDungs').innerHTML = "Dungeons timed: " + dungeons.timed;
     document.getElementById('depletedDungs').innerHTML = "Dungeons depleted: " + dungeons.depleted;

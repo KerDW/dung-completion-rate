@@ -10,7 +10,7 @@
     <body style="background: white;">
         <form onsubmit="searchChar()">
             <label for="rurl">Rio URL:</label>
-            <input type="text" id="rurl" value="https://raider.io/characters/eu/stormscale/Skoldus?utm_source=addon" name="rurl">
+            <input type="text" size="50" id="rurl" value="https://raider.io/characters/eu/stormscale/Skoldus?utm_source=addon" name="rurl">
             <!-- <label for="character">Character:</label>
             <input type="text" id="character" value="Skoldus" name="character">
             <br><br>
@@ -29,8 +29,9 @@
               <br><br>
             <input type="submit" value="Search">
         </form>
-        <div>Dungeons stats:</div>
+        <div>Info:</div>
         <div id="charName"></div>
+        <div id="covenant"></div>
         <div id="completedDungs"></div>
         <div id="timedDungs"></div>
         <div id="depletedDungs"></div>
