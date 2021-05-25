@@ -10,31 +10,18 @@
     <body style="background: white;">
         <form onsubmit="searchChar()">
             <label for="rurl">Rio URL:</label>
-            <input type="text" size="50" id="rurl" value="https://raider.io/characters/eu/stormscale/Skoldus?utm_source=addon" name="rurl">
-            <!-- <label for="character">Character:</label>
-            <input type="text" id="character" value="Skoldus" name="character">
-            <br><br>
-            <label for="server">Server:</label>
-            <input type="text" id="server" value="Stormscale" name="server">
-            <br><br>
-            <label for="region">Region:</label>
-            <select name="region" id="region">
-                <option value="eu" selected>Europe</option>
-                <option value="us">America</option>
-                <option value="kr">Korea</option>
-                <option value="tw">Taiwan</option>
-                <option value="asia">Asia</option>
-                <option value="apac">Asia Pacific</option>
-            </select> -->
+            <input type="text" size="50" id="rurl" value="https://raider.io/characters/eu/stormscale/Skoldus" name="rurl">
               <br><br>
             <input type="submit" value="Search">
         </form>
+        <br><br>
         <div>Info:</div>
-        <div id="charName"></div>
-        <div id="covenant"></div>
-        <div id="completedDungs"></div>
-        <div id="timedDungs"></div>
-        <div id="depletedDungs"></div>
-        <div id="timedPercent"></div>
+        <div style="display: none;" id="charName"></div>
+        <div style="display: none;" id="covenant"></div>
+        <div style="display: none;" id="completedDungs"></div>
+        <div style="display: none;" id="timedDungs"></div>
+        <div style="display: none;" id="depletedDungs"></div>
+        <div style="display: none;" id="timedPercent"></div>
+        <div style="display: none;" id="loading">Loading data...</div>
     </body>
 </html>

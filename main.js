@@ -64,9 +64,14 @@ function createWindow () {
         document.querySelector('.rio-text-shadow--heavy').innerText
       );
 
-      var covenant = await page.evaluate(() => 
+      // can crash in case of no covenant
+      try{
+        var covenant = await page.evaluate(() => 
         document.querySelector('.nowrap').innerText
-      );
+        );
+      } catch(err){
+
+      }
 
       console.log('Clicking rows')
 
