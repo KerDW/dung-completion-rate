@@ -88,6 +88,8 @@ function createWindow () {
       
       await page.waitForSelector(css_select)
 
+      await page.waitForTimeout(2000)
+
       console.log('Selecting data')
 
       // iterate all dungeons completed and sort info
