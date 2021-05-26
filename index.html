@@ -1,13 +1,27 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <meta charset="UTF-8">
-    <title>Hello World!</title>
-    <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
-</head>
-<body style="background: white;">
-    <p>
-
-    </p>
-</body>
+    <head>
+        <meta charset="UTF-8">
+        <!-- <title>Hello World!</title> -->
+        <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+        <script defer src='renderer.js'></script>
+        <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css"> -->
+    </head>
+    <body style="background: white;">
+        <form onsubmit="searchChar()">
+            <label for="rurl">Rio URL:</label>
+            <input type="text" size="50" id="rurl" value="https://raider.io/characters/eu/stormscale/Skoldus" name="rurl">
+              <br><br>
+            <input type="submit" value="Search">
+        </form>
+        <br><br>
+        <div>Info:</div>
+        <div style="display: none;" id="charName"></div>
+        <div style="display: none;" id="covenant"></div>
+        <div style="display: none;" id="completedDungs"></div>
+        <div style="display: none;" id="timedDungs"></div>
+        <div style="display: none;" id="depletedDungs"></div>
+        <div style="display: none;" id="timedPercent"></div>
+        <div style="display: none;" id="loading">Loading data...</div>
+    </body>
 </html>
