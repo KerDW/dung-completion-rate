@@ -38,5 +38,13 @@ ipcRenderer.on("sendCharData", (event, dungeons) => {
     document.getElementById('timedPercent').innerHTML = "Timed percent: " + dungeons.timedPercent + "%";
 
     document.getElementById("loading").style.display = 'none';
+    document.getElementById("notFound").style.display = 'none';
+
+})
+
+ipcRenderer.on("sendNotFound", (event) => {
+
+    document.getElementById("loading").style.display = 'none';
+    document.getElementById("notFound").style.display = 'block';
 
 })
