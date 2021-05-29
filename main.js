@@ -73,7 +73,7 @@ function createWindow () {
         // can crash in case of no covenant
         try{
           var covenant = await page.evaluate(() => 
-          document.querySelector('.nowrap').innerText
+            document.querySelector('.nowrap').innerText
           );
         } catch(err){
 
@@ -103,14 +103,14 @@ function createWindow () {
 
           var timed = 0;
           var depleted = 0;
-          let dungs = document.querySelectorAll('table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)');
+          let dung_results = document.querySelectorAll('table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)');
+          let dung_names = null
+          
+          for (let dung_result of dung_results){
+            var dung_result_value = dung_result.textContent
+            var dungeon_name = dung_result.closest('.rio-striped').parentElement.closest('.rio-striped').querySelector('tr:nth-child(1) > td:nth-child(1) > span').textContent.trimEnd();
 
-          for (let dung of dungs){
-            var dung_value = dung.textContent
-
-            // console.log(dung_value)
-
-            if(dung_value == 'Keystone Depleted'){
+            if(dung_result_value == 'Keystone Depleted'){
               depleted++
             } else {
               timed++
