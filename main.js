@@ -23,6 +23,8 @@ function createWindow () {
   const win = new BrowserWindow({
     width: 800,
     height: 600,
+    title: "Pug analyzer",
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: true,
       contextIsolation: false
@@ -35,7 +37,7 @@ function createWindow () {
 
   ipcMain.on("searchChar", (event, url) => {
 
-    var dungeons_data = new Object();
+    var dungeons_data = new Array();
     var found;
 
     (async () => {
@@ -73,7 +75,7 @@ function createWindow () {
         // can crash in case of no covenant
         try{
           var covenant = await page.evaluate(() => 
-          document.querySelector('.nowrap').innerText
+            document.querySelector('.nowrap').innerText
           );
         } catch(err){
 
@@ -101,37 +103,72 @@ function createWindow () {
         // iterate all dungeons completed and sort info
         dungeons_data = await page.evaluate(() => {
 
+          var dungeons_data = new Array();
           var timed = 0;
           var depleted = 0;
-          let dungs = document.querySelectorAll('table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)');
+          let dung_results = document.querySelectorAll('table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)');
+          // get all dungeon names and extract their names
+          let dung_names = Array.prototype.map.call(document.querySelectorAll('tbody.rio-striped > tr:nth-child(1) > td:nth-child(1) > span:nth-child(2)'), function(t) { return t.textContent.trimEnd(); });
+          
+          // add dungeon object for each dungeon
+          for(let dung_name of dung_names){
 
-          for (let dung of dungs){
-            var dung_value = dung.textContent
-
-            // console.log(dung_value)
-
-            if(dung_value == 'Keystone Depleted'){
-              depleted++
-            } else {
-              timed++
+            let dungeon = {
+              name: dung_name,
+              total: 0,
+              timed: 0,
+              depleted: 0
             }
+
+            dungeons_data.push(dungeon)
           }
 
-          console.log('Sorting data')
+          let dungeons_total = {
+            name: 'Total',
+            total: 0,
+            timed: 0,
+            depleted: 0
+          }
+          
+          // find runs for each dungeon and add data
+          for (let dung_result of dung_results){
+            var dung_result_value = dung_result.textContent
+            var dungeon_name = dung_result.closest('.rio-striped').parentElement.closest('.rio-striped').querySelector('tr:nth-child(1) > td:nth-child(1) > span').textContent.trimEnd();
 
-          let dungeons = {
-            total: timed + depleted,
-            timed: timed,
-            depleted: depleted,
-            timedPercent: Number(timed*100/(timed+depleted)).toFixed(2)
+            // find the matching array dungeon object and fill values
+            for (let dungeon_data of dungeons_data) {
+              if(dungeon_data.name === dungeon_name){
+                dungeon_data.total++
+                dungeons_total.total++
+                if(dung_result_value == 'Keystone Depleted'){
+                  dungeon_data.depleted++
+                  dungeons_total.depleted++
+                } else {
+                  dungeon_data.timed++
+                  dungeons_total.timed++
+                }
+              }
+            }
+            
+            // calculate timed percent after knowing the values
+            for (let dungeon_data of dungeons_data) {
+              dungeon_data.timed_percent = Number(dungeon_data.timed*100/(dungeon_data.timed+dungeon_data.depleted)).toFixed(2);
+            }
+            
           }
 
-          return dungeons;
+          dungeons_data.sort((a, b) => parseFloat(b.timed_percent) - parseFloat(a.timed_percent));
+          
+          dungeons_total.timed_percent = Number(dungeons_total.timed*100/(dungeons_total.timed+dungeons_total.depleted)).toFixed(2);
+
+          dungeons_data.unshift(dungeons_total)
+
+          return dungeons_data;
 
         });
 
-        dungeons_data.character = char_name;
-        dungeons_data.covenant = covenant;
+        // dungeons_data.character = char_name;
+        // dungeons_data.covenant = covenant;
 
       }
 
@@ -142,9 +179,9 @@ function createWindow () {
     })().then(() => {
       
       if(found){
-        event.sender.send("sendCharData", dungeons_data);
+        event.sender.send("charData", dungeons_data);
       } else {
-        event.sender.send("sendNotFound");
+        event.sender.send("notFound");
       }
     });
 
