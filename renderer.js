@@ -6,7 +6,9 @@ function searchChar(){
     url = document.getElementById('rurl').value;
 
     document.getElementById("loading").style.display = 'block';
+    document.getElementById("notFound").style.display = 'none';
     document.getElementById("searchButton").style.display = 'none';
+    document.getElementById("searchButton").disabled = true;
     
     document.getElementById('charName').style.display = 'none';
     document.getElementById('covenant').style.display = 'none';
@@ -16,7 +18,7 @@ function searchChar(){
 
 }
 
-ipcRenderer.on("sendCharData", (event, dungeons_data) => {
+ipcRenderer.on("charData", (event, dungeons_data) => {
 
     document.getElementById('charName').style.display = 'block';
     document.getElementById('covenant').style.display = 'block';
@@ -31,15 +33,16 @@ ipcRenderer.on("sendCharData", (event, dungeons_data) => {
     }
 
     document.getElementById("loading").style.display = 'none';
-    document.getElementById("notFound").style.display = 'none';
+    document.getElementById("searchButton").style.display = 'block';
+    document.getElementById("searchButton").disabled = false;
 
 })
 
-ipcRenderer.on("sendNotFound", (event) => {
+ipcRenderer.on("notFound", (event) => {
 
     document.getElementById("loading").style.display = 'none';
-    document.getElementById("notFound").style.display = 'block';
     document.getElementById("searchButton").style.display = 'block';
+    document.getElementById("searchButton").disabled = false;
 
 })
 

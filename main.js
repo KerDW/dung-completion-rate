@@ -179,9 +179,9 @@ function createWindow () {
     })().then(() => {
       
       if(found){
-        event.sender.send("sendCharData", dungeons_data);
+        event.sender.send("charData", dungeons_data);
       } else {
-        event.sender.send("sendNotFound");
+        event.sender.send("notFound");
       }
     });
 
