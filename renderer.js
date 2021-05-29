@@ -6,6 +6,7 @@ function searchChar(){
     url = document.getElementById('rurl').value;
 
     document.getElementById("loading").style.display = 'block';
+    document.getElementById("searchButton").style.display = 'none';
     
     document.getElementById('charName').style.display = 'none';
     document.getElementById('covenant').style.display = 'none';
@@ -38,5 +39,7 @@ ipcRenderer.on("sendNotFound", (event) => {
 
     document.getElementById("loading").style.display = 'none';
     document.getElementById("notFound").style.display = 'block';
+    document.getElementById("searchButton").style.display = 'block';
 
 })
+
