@@ -120,6 +120,13 @@ function createWindow () {
 
             dungeons_data.push(dungeon)
           }
+
+          let dungeons_total = {
+            name: 'Total',
+            total: 0,
+            timed: 0,
+            depleted: 0
+          }
           
           // find runs for each dungeon and add data
           for (let dung_result of dung_results){
@@ -130,22 +137,29 @@ function createWindow () {
             for (let dungeon_data of dungeons_data) {
               if(dungeon_data.name === dungeon_name){
                 dungeon_data.total++
+                dungeons_total.total++
                 if(dung_result_value == 'Keystone Depleted'){
                   dungeon_data.depleted++
+                  dungeons_total.depleted++
                 } else {
                   dungeon_data.timed++
+                  dungeons_total.timed++
                 }
               }
             }
-
-            // add total object to the beginning with the total of dungeons
-
+            
             // calculate timed percent after knowing the values
             for (let dungeon_data of dungeons_data) {
-              dungeon_data.timed_percent = Number(dungeon_data.timed*100/(dungeon_data.timed+dungeon_data.depleted)).toFixed(2) + "%";
+              dungeon_data.timed_percent = Number(dungeon_data.timed*100/(dungeon_data.timed+dungeon_data.depleted)).toFixed(2);
             }
-
+            
           }
+
+          dungeons_data.sort((a, b) => parseFloat(b.timed_percent) - parseFloat(a.timed_percent));
+          
+          dungeons_total.timed_percent = Number(dungeons_total.timed*100/(dungeons_total.timed+dungeons_total.depleted)).toFixed(2);
+
+          dungeons_data.unshift(dungeons_total)
 
           return dungeons_data;
 

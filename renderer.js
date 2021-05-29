@@ -9,7 +9,7 @@ function searchChar(){
     
     document.getElementById('charName').style.display = 'none';
     document.getElementById('covenant').style.display = 'none';
-    document.getElementById('dungeonsInfo').style.display = 'none';
+    document.getElementById('dungeonsInfo').innerHTML = '';
 
     ipcRenderer.send('searchChar', url)
 
@@ -24,8 +24,9 @@ ipcRenderer.on("sendCharData", (event, dungeons_data) => {
     // document.getElementById('charName').innerHTML = "Character: " + dungeons.character;
     // document.getElementById('covenant').innerHTML = "Covenant: " + dungeons.covenant;
 
-    for (let dungeon_data of dungeons_data) {
-        document.getElementById('dungeonsInfo').innerHTML = document.getElementById('dungeonsInfo').innerHTML + dungeon_data.name + " timed percent: " + dungeon_data.timed_percent + "<br>"
+    for (let i = 0; i < dungeons_data.length; i++) {
+        document.getElementById('dungeonsInfo').innerHTML = document.getElementById('dungeonsInfo').innerHTML + dungeons_data[i].name + " total runs: " + dungeons_data[i].total + ", depleted: " + dungeons_data[i].depleted + ", timed percent: " + dungeons_data[i].timed_percent + "%<br>"
+        if(i == 0) document.getElementById('dungeonsInfo').innerHTML = document.getElementById('dungeonsInfo').innerHTML + "<br>"
     }
 
     document.getElementById("loading").style.display = 'none';
