@@ -109,9 +109,10 @@ function createWindow () {
           var timed = 0;
           var depleted = 0;
           let dung_results = document.querySelectorAll('table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)');
+          let dung_levels = document.querySelectorAll('table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(2) > span > span > span:nth-child(1)');
           // get all dungeon names and extract their names
           let dung_names = Array.prototype.map.call(document.querySelectorAll('tbody.rio-striped > tr:nth-child(1) > td:nth-child(1) > span:nth-child(2)'), function(t) { return t.textContent.trimEnd(); });
-          
+
           // add dungeon object for each dungeon
           for(let dung_name of dung_names){
 
@@ -133,13 +134,15 @@ function createWindow () {
           }
           
           // find runs for each dungeon and add data
-          for (let dung_result of dung_results){
-            var dung_result_value = dung_result.textContent
-            var dungeon_name = dung_result.closest('.rio-striped').parentElement.closest('.rio-striped').querySelector('tr:nth-child(1) > td:nth-child(1) > span').textContent.trimEnd();
+          for (let i = 0; i < dung_results.length; i++) {
+            var dung_result_value = dung_results[i].textContent
+            var dungeon_name = dung_results[i].closest('.rio-striped').parentElement.closest('.rio-striped').querySelector('tr:nth-child(1) > td:nth-child(1) > span').textContent.trimEnd();
+            var dung_level = dung_levels[i].innerHTML.trim().replace("+", "")
 
             // find the matching array dungeon object and fill values
             for (let dungeon_data of dungeons_data) {
-              if(dungeon_data.name === dungeon_name){
+              // only log run if above a certain key
+              if(dungeon_data.name === dungeon_name && dung_level >= 15){
                 dungeon_data.total++
                 dungeons_total.total++
                 if(dung_result_value == 'Keystone Depleted'){
@@ -149,6 +152,7 @@ function createWindow () {
                   dungeon_data.timed++
                   dungeons_total.timed++
                 }
+                break;
               }
             }
             
@@ -156,7 +160,6 @@ function createWindow () {
             for (let dungeon_data of dungeons_data) {
               dungeon_data.timed_percent = Number(dungeon_data.timed*100/(dungeon_data.timed+dungeon_data.depleted)).toFixed(2);
             }
-            
           }
 
           dungeons_data.sort((a, b) => parseFloat(b.timed_percent) - parseFloat(a.timed_percent));
