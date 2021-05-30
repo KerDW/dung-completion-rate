@@ -18,14 +18,18 @@ function searchChar(){
 
 }
 
-ipcRenderer.on("charData", (event, dungeons_data) => {
+ipcRenderer.on("charData", (event, args) => {
+
+    dungeons_data = args[0]
+    char_name = args[1]
+    covenant = args[2]
 
     document.getElementById('charName').style.display = 'block';
     document.getElementById('covenant').style.display = 'block';
     document.getElementById('dungeonsInfo').style.display = 'block';
 
-    // document.getElementById('charName').innerHTML = "Character: " + dungeons.character;
-    // document.getElementById('covenant').innerHTML = "Covenant: " + dungeons.covenant;
+    document.getElementById('charName').innerHTML = "Character: " + char_name;
+    document.getElementById('covenant').innerHTML = "Covenant: " + covenant;
 
     for (let i = 0; i < dungeons_data.length; i++) {
         document.getElementById('dungeonsInfo').innerHTML = document.getElementById('dungeonsInfo').innerHTML + dungeons_data[i].name + " total runs: " + dungeons_data[i].total + ", depleted: " + dungeons_data[i].depleted + ", timed percent: " + dungeons_data[i].timed_percent + "%<br>"

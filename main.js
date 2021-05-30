@@ -33,11 +33,13 @@ function createWindow () {
 
   win.loadFile('index.html')
 
-  //win.webContents.openDevTools();
+  // win.webContents.openDevTools();
 
   ipcMain.on("searchChar", (event, url) => {
 
     var dungeons_data = new Array();
+    var char_name = "";
+    var covenant = "";
     var found;
 
     (async () => {
@@ -68,13 +70,13 @@ function createWindow () {
         }
 
         // get char name and covenant
-        var char_name = await page.evaluate(() => 
+        char_name = await page.evaluate(() => 
           document.querySelector('.rio-text-shadow--heavy').innerText
         );
 
         // can crash in case of no covenant
         try{
-          var covenant = await page.evaluate(() => 
+          covenant = await page.evaluate(() => 
             document.querySelector('.nowrap').innerText
           );
         } catch(err){
@@ -167,9 +169,6 @@ function createWindow () {
 
         });
 
-        // dungeons_data.character = char_name;
-        // dungeons_data.covenant = covenant;
-
       }
 
       await browser.close();
@@ -179,7 +178,7 @@ function createWindow () {
     })().then(() => {
       
       if(found){
-        event.sender.send("charData", dungeons_data);
+        event.sender.send("charData", [dungeons_data, char_name, covenant]);
       } else {
         event.sender.send("notFound");
       }
