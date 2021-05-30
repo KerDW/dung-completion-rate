@@ -4,6 +4,7 @@ function searchChar(){
     event.preventDefault();
 
     url = document.getElementById('rurl').value;
+    threshold = document.getElementById('threshold').value;
 
     document.getElementById("loading").style.display = 'block';
     document.getElementById("notFound").style.display = 'none';
@@ -14,7 +15,7 @@ function searchChar(){
     document.getElementById('covenant').style.display = 'none';
     document.getElementById('dungeonsInfo').innerHTML = '';
 
-    ipcRenderer.send('searchChar', url)
+    ipcRenderer.send('searchChar', [url, threshold])
 
 }
 

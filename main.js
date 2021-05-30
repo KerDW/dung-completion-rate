@@ -35,7 +35,10 @@ function createWindow () {
 
   // win.webContents.openDevTools();
 
-  ipcMain.on("searchChar", (event, url) => {
+  ipcMain.on("searchChar", (event, args) => {
+
+    var url = args[0]
+    var threshold = args[1]
 
     var dungeons_data = new Array();
     var char_name = "";
@@ -103,11 +106,9 @@ function createWindow () {
         console.log('Selecting data')
 
         // iterate all dungeons completed and sort info
-        dungeons_data = await page.evaluate(() => {
+        dungeons_data = await page.evaluate((threshold) => {
 
           var dungeons_data = new Array();
-          var timed = 0;
-          var depleted = 0;
           let dung_results = document.querySelectorAll('table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(1) > span:nth-child(1) > span:nth-child(1)');
           let dung_levels = document.querySelectorAll('table.slds-max-small-table > .rio-striped > tr > td:nth-child(1) > div:nth-child(1) > div:nth-child(1) > table > .rio-striped > tr:nth-child(1) > td:nth-child(3) > div:nth-child(1) > div:nth-child(2) > span > span > span:nth-child(1)');
           // get all dungeon names and extract their names
@@ -142,7 +143,7 @@ function createWindow () {
             // find the matching array dungeon object and fill values
             for (let dungeon_data of dungeons_data) {
               // only log run if above a certain key
-              if(dungeon_data.name === dungeon_name && dung_level >= 15){
+              if(dungeon_data.name === dungeon_name && dung_level >= threshold){
                 dungeon_data.total++
                 dungeons_total.total++
                 if(dung_result_value == 'Keystone Depleted'){
@@ -170,7 +171,7 @@ function createWindow () {
 
           return dungeons_data;
 
-        });
+        }, threshold);
 
       }
 
